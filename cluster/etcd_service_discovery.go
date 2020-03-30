@@ -358,7 +358,7 @@ func (sd *etcdServiceDiscovery) Init() error {
 	}
 
 	// namespaced etcd :)
-	sd.cli.KV = namespace.NewKV(sd.cli.KV, sd.etcdPrefix)
+	sd.cli.KV = namespace.NewKV(sd.cli.KV, sd.etcdPrefix) // 这一行将给put或者get这些命令加一个prefix
 	sd.cli.Watcher = namespace.NewWatcher(sd.cli.Watcher, sd.etcdPrefix)
 	sd.cli.Lease = namespace.NewLease(sd.cli.Lease, sd.etcdPrefix)
 
@@ -444,6 +444,7 @@ func newParallelGetter(cli *clientv3.Client, numWorkers int) parallelGetter {
 	return p
 }
 
+// 通过etcd中servers/serverType/serverID方式获取server结构,通过waitGroup进行orchestration
 func (p *parallelGetter) start() {
 	for i := 0; i < p.numWorkers; i++ {
 		go func() {

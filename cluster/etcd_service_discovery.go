@@ -317,10 +317,10 @@ func (sd *etcdServiceDiscovery) GetServers() []*Server {
 }
 
 func (sd *etcdServiceDiscovery) bootstrap() error {
-	if err := sd.grantLease(); err != nil {
+	if err := sd.grantLease(); err != nil { //获取合约
 		return err
 	}
-
+	//这里注意将本机的server结构转成string,并伙同key一同存入etcd,同时拉取其他的机器
 	if err := sd.bootstrapServer(sd.server); err != nil {
 		return err
 	}
@@ -358,7 +358,7 @@ func (sd *etcdServiceDiscovery) Init() error {
 	}
 
 	// namespaced etcd :)
-	sd.cli.KV = namespace.NewKV(sd.cli.KV, sd.etcdPrefix) // 这一行将给put或者get这些命令加一个prefix
+	sd.cli.KV = namespace.NewKV(sd.cli.KV, sd.etcdPrefix) // 这一行将给put或者get这些命令加一个prefix,详细在namespace中有代码
 	sd.cli.Watcher = namespace.NewWatcher(sd.cli.Watcher, sd.etcdPrefix)
 	sd.cli.Lease = namespace.NewLease(sd.cli.Lease, sd.etcdPrefix)
 
@@ -367,6 +367,7 @@ func (sd *etcdServiceDiscovery) Init() error {
 	}
 
 	// update servers
+	//每过一段时间做一次同步
 	syncServersTicker := time.NewTicker(sd.syncServersInterval)
 	go func() {
 		for sd.running {
@@ -381,7 +382,7 @@ func (sd *etcdServiceDiscovery) Init() error {
 			}
 		}
 	}()
-
+	//同时做监听
 	go sd.watchEtcdChanges()
 	return nil
 }
@@ -569,6 +570,7 @@ func (sd *etcdServiceDiscovery) revoke() error {
 	}
 }
 
+// 先按照server type 存map，然后再按照server id 存server结构
 func (sd *etcdServiceDiscovery) addServer(sv *Server) {
 	if _, loaded := sd.serverMapByID.LoadOrStore(sv.ID, sv); !loaded {
 		sd.writeLockScope(func() {

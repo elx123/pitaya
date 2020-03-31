@@ -156,9 +156,9 @@ func (h *HandlerService) Register(comp component.Component, opts []component.Opt
 	}
 
 	// register all handlers
-	h.services[s.Name] = s
+	h.services[s.Name] = s //根据service name注册service
 	for name, handler := range s.Handlers {
-		handlers[fmt.Sprintf("%s.%s", s.Name, name)] = handler
+		handlers[fmt.Sprintf("%s.%s", s.Name, name)] = handler //根据service name加method name存于全局handlers下
 	}
 	return nil
 }

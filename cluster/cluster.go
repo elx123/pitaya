@@ -98,7 +98,7 @@ func buildRequest(
 	}
 	ctx = pcontext.AddToPropagateCtx(ctx, constants.PeerIDKey, thisServer.ID)
 	ctx = pcontext.AddToPropagateCtx(ctx, constants.PeerServiceKey, thisServer.Type)
-	req.Metadata, err = pcontext.Encode(ctx)
+	req.Metadata, err = pcontext.Encode(ctx) // 提取context中的内容并封装入Metadatga中
 	if err != nil {
 		return req, err
 	}

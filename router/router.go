@@ -68,11 +68,12 @@ func (r *Router) defaultRoute(
 	for _, v := range servers {
 		srvList = append(srvList, v)
 	}
-	server := srvList[rnd.Intn(len(srvList))]
+	server := srvList[rnd.Intn(len(srvList))] //从已有的servers中随机一个server
 	return server
 }
 
 // Route gets the right server to use in the call
+//这个函数比较复杂
 func (r *Router) Route(
 	ctx context.Context,
 	rpcType protos.RPCType,

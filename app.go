@@ -46,6 +46,7 @@ import (
 	"github.com/topfreegames/pitaya/errors"
 	"github.com/topfreegames/pitaya/logger"
 	"github.com/topfreegames/pitaya/metrics"
+	"github.com/topfreegames/pitaya/modules"
 	mods "github.com/topfreegames/pitaya/modules"
 	"github.com/topfreegames/pitaya/remote"
 	"github.com/topfreegames/pitaya/router"
@@ -302,7 +303,7 @@ func startDefaultSD() {
 
 func startDefaultRPCServer() {
 	// initialize default rpc server
-	rpcServer, err := cluster.NewNatsRPCServer(app.config, app.server, app.metricsReporters, app.dieChan)
+	rpcServer, err := cluster.NewGRPCServer(app.config, app.server, app.metricsReporters)
 	if err != nil {
 		logger.Log.Fatalf("error starting cluster rpc server component: %s", err.Error())
 	}
@@ -311,7 +312,12 @@ func startDefaultRPCServer() {
 
 func startDefaultRPCClient() {
 	// initialize default rpc client
-	rpcClient, err := cluster.NewNatsRPCClient(app.config, app.server, app.metricsReporters, app.dieChan)
+	bindetcd := modules.NewETCDBindingStorage(app.server, app.config)
+
+	bindRegion := cluster.NewConfigInfoRetriever(app.config)
+
+	rpcClient, err := cluster.NewGRPCClient(app.config, app.server, app.metricsReporters, bindetcd, bindRegion)
+
 	if err != nil {
 		logger.Log.Fatalf("error starting cluster rpc client component: %s", err.Error())
 	}

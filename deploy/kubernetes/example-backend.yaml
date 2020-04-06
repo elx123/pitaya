@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - image: quay.io/felipejfc/pitaya-example-sv:v1
-        command:
+        command: #这里作为参数提供给image
           - /server
           - -type
           - game

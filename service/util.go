@@ -193,12 +193,12 @@ func processHandlerMessage(
 		// with timeouts, maybe we can improve this flow
 		resp = []byte("ack")
 	}
-
+	//在返回之前做一系列的预处理
 	resp, err = executeAfterPipeline(ctx, resp, err)
 	if err != nil {
 		return nil, err
 	}
-
+	//通过序列化方式将resp序列化
 	ret, err := serializeReturn(serializer, resp)
 	if err != nil {
 		return nil, err

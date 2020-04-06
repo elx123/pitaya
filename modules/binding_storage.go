@@ -84,6 +84,7 @@ func (b *ETCDBindingStorage) removeBinding(uid string) error {
 // GetUserFrontendID gets the id of the frontend server a user is connected to
 // TODO: should we set context here?
 // TODO: this could be way more optimized, using watcher and local caching
+// 根据uid和server type获取对应的server id
 func (b *ETCDBindingStorage) GetUserFrontendID(uid, frontendType string) (string, error) {
 	etcdRes, err := b.cli.Get(context.Background(), getUserBindingKey(uid, frontendType))
 	if err != nil {
@@ -95,6 +96,7 @@ func (b *ETCDBindingStorage) GetUserFrontendID(uid, frontendType string) (string
 	return string(etcdRes.Kvs[0].Value), nil
 }
 
+//在session的全局关闭函数中注册一个函数,在删除对应的session后同时删除etcd中对应的记录
 func (b *ETCDBindingStorage) setupOnSessionCloseCB() {
 	session.OnSessionClose(func(s *session.Session) {
 		if s.UID() != "" {
@@ -135,6 +137,7 @@ func (b *ETCDBindingStorage) watchLeaseChan(c <-chan *clientv3.LeaseKeepAliveRes
 	}
 }
 
+// 申请一个合约,同时保持合约永久有效
 func (b *ETCDBindingStorage) bootstrapLease() error {
 	// grab lease
 	l, err := b.cli.Grant(context.TODO(), int64(b.leaseTTL.Seconds()))

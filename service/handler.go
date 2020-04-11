@@ -264,6 +264,7 @@ func (h *HandlerService) processMessage(a *agent.Agent, msg *message.Message) {
 	ctx := pcontext.AddToPropagateCtx(context.Background(), constants.StartTimeKey, time.Now().UnixNano())
 	ctx = pcontext.AddToPropagateCtx(ctx, constants.RouteKey, msg.Route)
 	ctx = pcontext.AddToPropagateCtx(ctx, constants.RequestIDKey, requestID.String())
+	//前面这么一些列的context都是为了给span
 	tags := opentracing.Tags{
 		"local.id":   h.server.ID,
 		"span.kind":  "server",

@@ -53,6 +53,8 @@ type Remote struct {
 }
 
 // NewRemote create new Remote instance
+// remote session是一个session的代替,存于backend
+//A session is considered a frontend session if it is being accessed from a frontend server, and a backend session is accessed from a backend server. Each kind of session is better described below.
 func NewRemote(
 	sess *protos.Session,
 	reply string,

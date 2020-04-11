@@ -97,7 +97,7 @@ func (gs *GRPCClient) Call(
 	ctx context.Context,
 	rpcType protos.RPCType,
 	route *route.Route,
-	session *session.Session,
+	session *session.Session, // 这里有一个疑问这个session是本机上的session,那么传输到远程server上怎么办呢
 	msg *message.Message,
 	server *Server,
 ) (*protos.Response, error) {
